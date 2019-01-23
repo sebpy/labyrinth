@@ -1,14 +1,15 @@
+#!/usr/bin/env python3
 # -*- coding: utf8 -*-
 
-# import random
+def loadLabyrinth():
+	""" Read wall.txt and show labyrinth"""
 
-class Labyrinth():
-	""" Cette class regroupe toutes les méthodes et attributs de l'objet labyrinth """
+	wall = open('wall.txt', 'r') # Open file
+	readLines = wall.readlines() # Read file line by line
+	wallList = [list(i.strip()) for i in readLines] # add line to list
 
-	with open('wall.txt', r) as w:
-		data = w.readlines()
-		w.close()
-
-	for i in range(len(data)):
-		data[i] = data[i].strip()
-		return tuple(data)
+	for i in wallList:
+		wallPrint = ''
+		for w in i:
+			wallPrint = wallPrint + w
+		print(wallPrint)
