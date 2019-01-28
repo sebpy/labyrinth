@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf8 -*-
+""" Class labyrinth with all methods """
 
-class Labyrinth:
+#import random
+
+
+class Labyrinth(object):
     """ Create labyrinth with wall.txt """
 
     def __init__(self):
@@ -12,11 +16,11 @@ class Labyrinth:
 
         with open('wall.txt', 'r') as laby:  # open wall.txt
             for line in laby:
-                l = []  # create l list
+                i = []  # create l list
                 for char in line:
                     if char != "\n":  # del last \n
-                        l.append(char)
-                self.map.append(l)
+                        i.append(char)
+                self.map.append(i)
 
     def dislay_map(self, char, pos_character):
         """ Show map
@@ -31,6 +35,10 @@ class Labyrinth:
                 print(line)
             line_n += 1  # incremente line_n
 
+    def items(self):
+        """ Randomize 3 items on map """
+        pass
+
     def valid_move(self, pos_x, pos_y):
         """ Testing if move is valid """
 
@@ -40,7 +48,7 @@ class Labyrinth:
         if pos_x < 0 or pos_y < 0 or pos_x > (n_rows -1) or pos_y > (n_line -1):
             return None
         elif self.map[pos_x][pos_y] == "S":
-            return [-1,-1]
+            return [-1, -1]
         elif self.map[pos_x][pos_y] != " ":
             return None
         else:
@@ -48,38 +56,41 @@ class Labyrinth:
 
     def user_move(self, pos_char):
         """ User choice one direction for move MacGyver
-         Liste of moves : Z,Q,S,D for Up, Left, Down and Right """
+        Liste of moves : Z,Q,S,D for Up, Left, Down and Right """
 
-        choice = input("Utiliser les lettres Z (Haut), S (Bas), Q (Gauche), D (Droite)\n Quelle direction? ")
+        choice = input("Utiliser les lettres Z (Haut), S (Bas), Q (Gauche), \
+        D (Droite)\n Quelle direction? ")
         if choice.upper() == "S":
-            pos_char = self.valid_move(pos_character[1]+1, pos_character[0])
+            pos_char = self.valid_move(POS_CHARACTER[1]+1, POS_CHARACTER[0])
         elif choice.upper() == "Z":
-            pos_char = self.valid_move(pos_character[1]-1, pos_character[0])
+            pos_char = self.valid_move(POS_CHARACTER[1]-1, POS_CHARACTER[0])
         elif choice.upper() == "Q":
-            pos_char = self.valid_move(pos_character[1], pos_character[0]-1)
+            pos_char = self.valid_move(POS_CHARACTER[1], POS_CHARACTER[0]-1)
         elif choice.upper() == "D":
-            pos_char = self.valid_move(pos_character[1], pos_character[0]+1)
+            pos_char = self.valid_move(POS_CHARACTER[1], POS_CHARACTER[0]+1)
         elif choice.upper() == "X":
             exit()
+        else:
+            print("Seul les touche de déplacement Z,Q,S,D et X pour quitter sont authorisés")
 
         if pos_char is None:
             print("Déplacement impossible")
-        elif pos_char == [-1,-1]:
+        elif pos_char == [-1, -1]:
             print("Super! Vous vous êtes échappé!")
             return exit()
         else:
-            pos_character[0] = pos_char[0]
-            pos_character[1] = pos_char[1]
+            POS_CHARACTER[0] = pos_char[0]
+            POS_CHARACTER[1] = pos_char[1]
 
 
 if __name__ == "__main__":
 
-    char = ["M"]
-    pos_character = [0, 1]
+    CHAR = ["M"]
+    POS_CHARACTER = [0, 1]
 
-    lab = Labyrinth()
-    lab.load_map()
+    LAB = Labyrinth()
+    LAB.load_map()
 
     while True:
-        lab.dislay_map(char, pos_character)
-        lab.user_move(pos_character)
+        LAB.dislay_map(CHAR, POS_CHARACTER)
+        LAB.user_move(POS_CHARACTER)
