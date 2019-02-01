@@ -2,7 +2,7 @@
 # -*- coding: utf8 -*-
 """ Class labyrinth with all methods """
 
-#import random
+import random as rd
 
 
 class Labyrinth(object):
@@ -10,6 +10,9 @@ class Labyrinth(object):
 
     def __init__(self):
         self.map = []  # variable map with list
+        self.total_items = 0  # initialize variable total_items
+        self.pos_x = 0
+        self.pos_y = 1
 
     def load_map(self):
         """ Open wall.txt file with structure of labyrinth """
@@ -22,52 +25,61 @@ class Labyrinth(object):
                         i.append(char)
                 self.map.append(i)
 
-    def dislay_map(self, char, pos_character):
-        """ Show map
-        char = MacGyver
-        pos_character = Position of MacGyver """
+    def randomize_items(self):
+        """ Place 3 items in labyrinth """
+        i = ["1", "2", "3"]
+        while len(i) > 0:
+            pos_y = rd.randint(0, 8)  # generates a number between 0 and the number of rows
+            pos_x = rd.randint(0, 14)  # generates a number between 0 and the number of col
+            if self.map[pos_y][pos_x] == " ":
+                self.map[pos_y][pos_x] = i[0]
+                i.pop(0)
+
+    def dislay_map(self):
+        """ Show map """
 
         line_n = 0  # initialise
         for line in self.map:
-            if line_n == pos_character[1]:
-                print(line[0:pos_character[0]] + char + line[pos_character[0]+1:])  # Slicing
-            else:
-                print(line)
-            line_n += 1  # incremente line_n
+            print("".join(line))  # show laby without [""]
+            line_n += 1  # increment line_n
 
-    def items(self):
-        """ Randomize 3 items on map """
-        pass
-
-    def valid_move(self, pos_x, pos_y):
+    def valid_move(self, pos_y, pos_x):
         """ Testing if move is valid """
 
-        n_line = len(self.map[0])  # count numbers rows
-        n_rows = len(self.map)  # count numbers lines
+        if pos_x < 0 or pos_y < 0 or pos_y > 9 or pos_x > 14:
+            return None
+        elif self.map[pos_x][pos_y] == "G":
+            if self.total_items != 3:
+                self.map[pos_x][pos_y] = " "
+                print("Vous devez récupérer tout les objets pour endormir le gardien")
+                exit()
+            else:
+                return [-1, -1]
+        elif self.map[pos_y][pos_x] == "1" or self.map[pos_y][pos_x] == "2" or self.map[pos_y][pos_x] == "2":
+            self.total_items += 1  # Increment count
+            self.map[pos_y][pos_x] = " "  # replace empty space if item is picked
+            return [pos_y, pos_x]  # return position of MG
 
-        if pos_x < 0 or pos_y < 0 or pos_x > (n_rows -1) or pos_y > (n_line -1):
-            return None
-        elif self.map[pos_x][pos_y] == "S":
-            return [-1, -1]
-        elif self.map[pos_x][pos_y] != " ":
-            return None
+        elif self.map[pos_y][pos_x] != " ":
+            return None  # return None if move impossible
         else:
-            return [pos_y, pos_x]
+            return [pos_y, pos_x]  # return position of MG
 
-    def user_move(self, pos_char):
+    def user_move(self):
         """ User choice one direction for move MacGyver
         Liste of moves : Z,Q,S,D for Up, Left, Down and Right """
 
+        print("Objet ramassés: " + str(self.total_items))
         choice = input("Utiliser les lettres Z (Haut), S (Bas), Q (Gauche), \
         D (Droite)\n Quelle direction? ")
         if choice.upper() == "S":
-            pos_char = self.valid_move(POS_CHARACTER[1]+1, POS_CHARACTER[0])
+            pos_char = self.valid_move(self.pos_y + 1, self.pos_x)
         elif choice.upper() == "Z":
-            pos_char = self.valid_move(POS_CHARACTER[1]-1, POS_CHARACTER[0])
+            pos_char = self.valid_move(self.pos_y - 1, self.pos_x)
         elif choice.upper() == "Q":
-            pos_char = self.valid_move(POS_CHARACTER[1], POS_CHARACTER[0]-1)
+            pos_char = self.valid_move(self.pos_y, self.pos_x - 1)
         elif choice.upper() == "D":
-            pos_char = self.valid_move(POS_CHARACTER[1], POS_CHARACTER[0]+1)
+            pos_char = self.valid_move(self.pos_y, self.pos_x + 1)
         elif choice.upper() == "X":
             exit()
         else:
@@ -79,18 +91,17 @@ class Labyrinth(object):
             print("Super! Vous vous êtes échappé!")
             return exit()
         else:
-            POS_CHARACTER[0] = pos_char[0]
-            POS_CHARACTER[1] = pos_char[1]
+            
+            self.pos_y = pos_char[0]
+            self.pos_x = pos_char[1]
 
 
 if __name__ == "__main__":
 
-    CHAR = ["M"]
-    POS_CHARACTER = [0, 1]
-
     LAB = Labyrinth()
     LAB.load_map()
+    LAB.randomize_items()
 
     while True:
-        LAB.dislay_map(CHAR, POS_CHARACTER)
-        LAB.user_move(POS_CHARACTER)
+        LAB.dislay_map()
+        LAB.user_move()
