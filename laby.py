@@ -13,6 +13,7 @@ class Labyrinth(object):
         self.total_items = 0  # initialize variable total_items
         self.pos_x = 0
         self.pos_y = 1
+        self.mg = []
 
     def load_map(self):
         """ Open wall.txt file with structure of labyrinth """
@@ -27,6 +28,7 @@ class Labyrinth(object):
 
     def randomize_items(self):
         """ Place 3 items in labyrinth """
+
         i = ["1", "2", "3"]
         while len(i) > 0:
             pos_y = rd.randint(0, 8)  # generates a number between 0 and the number of rows
@@ -46,23 +48,23 @@ class Labyrinth(object):
     def valid_move(self, pos_y, pos_x):
         """ Testing if move is valid """
 
-        if pos_x < 0 or pos_y < 0 or pos_y > 9 or pos_x > 14:
+        if pos_x < 0 or pos_y < 0 or pos_y > 8 or pos_x > 14:
             return None
-        elif self.map[pos_x][pos_y] == "G":
+        elif self.map[pos_y][pos_x] == "G":
             if self.total_items != 3:
-                self.map[pos_x][pos_y] = " "
+                self.map[pos_y][pos_x] = " "
                 print("Vous devez récupérer tout les objets pour endormir le gardien")
                 exit()
             else:
                 return [-1, -1]
-        elif self.map[pos_y][pos_x] == "1" or self.map[pos_y][pos_x] == "2" or self.map[pos_y][pos_x] == "2":
+        elif self.map[pos_y][pos_x] == "1" or self.map[pos_y][pos_x] == "2" or self.map[pos_y][pos_x] == "3":
             self.total_items += 1  # Increment count
-            self.map[pos_y][pos_x] = " "  # replace empty space if item is picked
+            self.map[self.pos_y][self.pos_x] = " "  # replace empty space if item is picked
             return [pos_y, pos_x]  # return position of MG
-
         elif self.map[pos_y][pos_x] != " ":
             return None  # return None if move impossible
         else:
+            self.map[self.pos_y][self.pos_x] = " "  # Erase old position (M)
             return [pos_y, pos_x]  # return position of MG
 
     def user_move(self):
@@ -91,9 +93,9 @@ class Labyrinth(object):
             print("Super! Vous vous êtes échappé!")
             return exit()
         else:
-            
-            self.pos_y = pos_char[0]
-            self.pos_x = pos_char[1]
+            self.pos_y = pos_char[0]  # News Y position
+            self.pos_x = pos_char[1]  # New X position
+            self.map[self.pos_y][self.pos_x] = "M"  # New position whith marker M for Mac Gyver
 
 
 if __name__ == "__main__":
