@@ -13,7 +13,7 @@ class Labyrinth(object):
         self.total_items = 0  # initialize variable total_items
         self.pos_x = 0
         self.pos_y = 1
-        self.mg = []
+        self.finish = False
 
     def load_map(self):
         """ Open wall.txt file with structure of labyrinth """
@@ -52,8 +52,8 @@ class Labyrinth(object):
             return None
         elif self.map[pos_y][pos_x] == "G":
             if self.total_items != 3:
-                self.map[pos_y][pos_x] = " "
-                print("Vous devez récupérer tout les objets pour endormir le gardien")
+                print("Vous êtes mort! Vous devez récupérer tout les objets pour endormir le gardien")
+                #self.finish = True
                 exit()
             else:
                 return [-1, -1]
@@ -71,6 +71,7 @@ class Labyrinth(object):
         """ User choice one direction for move MacGyver
         Liste of moves : Z,Q,S,D for Up, Left, Down and Right """
 
+        pos_char = None
         print("Objet ramassés: " + str(self.total_items))
         choice = input("Utiliser les lettres Z (Haut), S (Bas), Q (Gauche), \
         D (Droite)\n Quelle direction? ")
@@ -86,16 +87,24 @@ class Labyrinth(object):
             exit()
         else:
             print("Seul les touche de déplacement Z,Q,S,D et X pour quitter sont authorisés")
-
         if pos_char is None:
-            print("Déplacement impossible")
+            pass
         elif pos_char == [-1, -1]:
             print("Super! Vous vous êtes échappé!")
-            return exit()
+            #self.finish = True
+            exit()
         else:
             self.pos_y = pos_char[0]  # News Y position
             self.pos_x = pos_char[1]  # New X position
             self.map[self.pos_y][self.pos_x] = "M"  # New position whith marker M for Mac Gyver
+
+    def start_game(self):
+        if not self.finish:
+            while True:
+                self.dislay_map()
+                self.user_move()
+        else:
+            exit()
 
 
 if __name__ == "__main__":
@@ -103,7 +112,4 @@ if __name__ == "__main__":
     LAB = Labyrinth()
     LAB.load_map()
     LAB.randomize_items()
-
-    while True:
-        LAB.dislay_map()
-        LAB.user_move()
+    LAB.start_game()
