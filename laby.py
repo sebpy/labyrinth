@@ -3,17 +3,19 @@
 """ Class labyrinth with all methods """
 
 import random as rd
+import pygame
+from pygame import font
 
 
-class Labyrinth(object):
+class Labyrinth:
     """ Create labyrinth with wall.txt """
 
     def __init__(self):
+        self.start_game = 0
         self.map = []  # variable map with list
         self.total_items = 0  # initialize variable total_items
         self.pos_x = 0
         self.pos_y = 1
-        self.finish = False
 
     def load_map(self):
         """ Open wall.txt file with structure of labyrinth """
@@ -30,86 +32,116 @@ class Labyrinth(object):
         """ Place 3 items in labyrinth """
 
         i = ["1", "2", "3"]
-        while len(i) > 0:
-            pos_y = rd.randint(0, 8)  # generates a number between 0 and the number of rows
+        while i:
+            pos_y = rd.randint(0, 14)  # generates a number between 0 and the number of rows
             pos_x = rd.randint(0, 14)  # generates a number between 0 and the number of col
             if self.map[pos_y][pos_x] == " ":
                 self.map[pos_y][pos_x] = i[0]
                 i.pop(0)
 
-    def dislay_map(self):
+    def display_map(self, window):
         """ Show map """
 
-        line_n = 0  # initialise
+        bg = pygame.image.load("ressources/sol.png").convert()
+        wall = pygame.image.load("ressources/wall.png").convert()
+        guardian = pygame.image.load("ressources/Gardien.png").convert()
+        item_one = pygame.image.load("ressources/ether.png").convert()
+        item_two = pygame.image.load("ressources/seringue.png").convert()
+        item_three = pygame.image.load("ressources/aiguille.png").convert()
+
+        line_n = 0
         for line in self.map:
-            print("".join(line))  # show laby without [""]
-            line_n += 1  # increment line_n
+            rows_n = 0
+            for sprite in line:
+                y = line_n * 30
+                x = rows_n * 30
+                if sprite == "#":
+                    window.blit(wall, (x, y))
+                elif sprite == "G":
+                    window.blit(guardian, (x, y))
+                elif sprite == " ":
+                    window.blit(bg, (x, y))
+                elif sprite == "1":
+                    window.blit(item_one, (x, y))
+                elif sprite == "2":
+                    window.blit(item_two, (x, y))
+                elif sprite == "3":
+                    window.blit(item_three, (x, y))
+                rows_n += 1
+            line_n += 1
+
+    def guardian(self, pos_y, pos_x):
+        return self.map[pos_y][pos_x] == "G"
+
+    def empty_box(self, pos_y, pos_x):
+        return self.map[pos_y][pos_x] == " "
+
+    def items_in_box(self, pos_y, pos_x):
+        return self.map[pos_y][pos_x] in ["1", "2", "3"]
 
     def valid_move(self, pos_y, pos_x):
         """ Testing if move is valid """
 
-        if pos_x < 0 or pos_y < 0 or pos_y > 8 or pos_x > 14:
-            return None
-        elif self.map[pos_y][pos_x] == "G":
-            if self.total_items != 3:
-                print("Vous êtes mort! Vous devez récupérer tout les objets pour endormir le gardien")
-                #self.finish = True
-                exit()
-            else:
-                return [-1, -1]
-        elif self.map[pos_y][pos_x] == "1" or self.map[pos_y][pos_x] == "2" or self.map[pos_y][pos_x] == "3":
-            self.total_items += 1  # Increment count
-            self.map[self.pos_y][self.pos_x] = " "  # replace empty space if item is picked
-            return [pos_y, pos_x]  # return position of MG
-        elif self.map[pos_y][pos_x] != " ":
-            return None  # return None if move impossible
+        if self.items_in_box(pos_y, pos_x):
+            return True
+        elif self.empty_box(pos_y, pos_x):
+            return True
         else:
-            self.map[self.pos_y][self.pos_x] = " "  # Erase old position (M)
-            return [pos_y, pos_x]  # return position of MG
+            return False
 
-    def user_move(self):
+    def counter_items(self, pos_y, pos_x, window):
+        if self.map[pos_y][pos_x] in ["1", "2", "3"]:
+            self.total_items += 1
+
+        font_text = pygame.font.SysFont("cosmicsansms", 32)
+        text = font_text.render("Items: " + str(self.total_items), True, (255, 255, 255))
+
+        window.blit(text, (360, 4))
+
+    def mg_vs_guardian(self, pos_y, pos_x, window):
+        if self.map[pos_y][pos_x] == "G" and self.total_items != 3:
+            text_dead = pygame.font.SysFont("cosmicsansms", 32)
+            msg_dead = text_dead.render("Vous êtes mort! Vous devez récupérer", True, (255, 255, 255))
+            msg_dead2 = text_dead.render("tout les objets pour endormir le gardien", True, (255, 255, 255))
+            window.blit(msg_dead, (22, 150))
+            window.blit(msg_dead2, (16, 170))
+
+            self.start_game = 0
+
+        elif self.map[pos_y][pos_x] == "G" and self.total_items == 3:
+            text_final = pygame.font.SysFont("cosmicsansms", 32)
+            msg_final = text_final.render("Super!! Vous vous êtes échappé!", True, (255, 255, 255))
+            window.blit(msg_final, (50, 190))
+
+            self.start_game = 0
+
+    def user_move(self, window):
         """ User choice one direction for move MacGyver
         Liste of moves : Z,Q,S,D for Up, Left, Down and Right """
 
-        pos_char = None
-        print("Objet ramassés: " + str(self.total_items))
-        choice = input("Utiliser les lettres Z (Haut), S (Bas), Q (Gauche), \
-        D (Droite)\n Quelle direction? ")
-        if choice.upper() == "S":
-            pos_char = self.valid_move(self.pos_y + 1, self.pos_x)
-        elif choice.upper() == "Z":
-            pos_char = self.valid_move(self.pos_y - 1, self.pos_x)
-        elif choice.upper() == "Q":
-            pos_char = self.valid_move(self.pos_y, self.pos_x - 1)
-        elif choice.upper() == "D":
-            pos_char = self.valid_move(self.pos_y, self.pos_x + 1)
-        elif choice.upper() == "X":
-            exit()
-        else:
-            print("Seul les touche de déplacement Z,Q,S,D et X pour quitter sont authorisés")
-        if pos_char is None:
-            pass
-        elif pos_char == [-1, -1]:
-            print("Super! Vous vous êtes échappé!")
-            #self.finish = True
-            exit()
-        else:
-            self.pos_y = pos_char[0]  # News Y position
-            self.pos_x = pos_char[1]  # New X position
-            self.map[self.pos_y][self.pos_x] = "M"  # New position whith marker M for Mac Gyver
+        y = self.pos_y
+        x = self.pos_x
+        mg = pygame.image.load("ressources/MacGyver.png").convert()
 
-    def start_game(self):
-        if not self.finish:
-            while True:
-                self.dislay_map()
-                self.user_move()
-        else:
-            exit()
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_DOWN:
+                    y = self.pos_y + 1
+                elif event.key == pygame.K_UP:
+                    y = self.pos_y - 1
+                elif event.key == pygame.K_LEFT:
+                    x = self.pos_x - 1
+                elif event.key == pygame.K_RIGHT:
+                    x = self.pos_x + 1
+            elif event.type == pygame.QUIT:
+                exit()
 
+        if self.valid_move(y, x):
+            self.map[self.pos_y][self.pos_x] = " "
 
-if __name__ == "__main__":
+            self.pos_y = y
+            self.pos_x = x
 
-    LAB = Labyrinth()
-    LAB.load_map()
-    LAB.randomize_items()
-    LAB.start_game()
+        self.counter_items(y, x, window)
+        self.mg_vs_guardian(y, x, window)
+        return window.blit(mg, ((self.pos_x * 30), (self.pos_y * 30)))
