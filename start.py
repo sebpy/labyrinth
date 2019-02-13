@@ -11,11 +11,11 @@ sprite_n = 15
 board_size = sprite_size * sprite_n
 
 pygame.init()
-pygame.display.set_caption("Aidez Mac Gyver à s'échapper!")
+pygame.display.set_caption("Help Mac Gyver to escape!")
 
 window = pygame.display.set_mode((board_size, board_size))
 text_load = pygame.font.SysFont("cosmicsansms", 32)
-msg_load = text_load.render("Pour jouer, appuyer sur ENTREE", True, (255, 255, 255))
+msg_load = text_load.render("To play, press ENTER", True, (255, 255, 255))
 
 if __name__ == "__main__":
     launch_game = 1
@@ -25,11 +25,11 @@ if __name__ == "__main__":
         lab.randomize_items()
         pygame.key.set_repeat(400, 30)
 
-        for cmd in pygame.event.get():
-            if cmd.type == pygame.QUIT:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
                 launch_game = 0
-            if cmd.type == pygame.KEYDOWN:
-                if cmd.key == pygame.K_RETURN:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
                     lab.start_game = 1
 
         window.blit(msg_load, (50, 220))
