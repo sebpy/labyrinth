@@ -3,39 +3,41 @@
 """ Start Labyrinth game """
 
 import pygame
-
 import laby
+import display
 
-sprite_size = 30
-sprite_n = 15
-board_size = sprite_size * sprite_n
 
-pygame.init()
-pygame.display.set_caption("Help Mac Gyver to escape!")
+def main():
+    disp = display.Display()
+    lab = laby.Labyrinth()
+    lab.load_map()
+    lab.randomize_items()
 
-window = pygame.display.set_mode((board_size, board_size))
-text_load = pygame.font.SysFont("cosmicsansms", 32)
-msg_load = text_load.render("To play, press ENTER", True, (255, 255, 255))
-
-if __name__ == "__main__":
-    launch_game = 1
-    while launch_game:
-        lab = laby.Labyrinth()
-        lab.load_map()
-        lab.randomize_items()
-        pygame.key.set_repeat(400, 30)
-
+    disp.window.blit(disp.msg_load, (40, 220))
+    pygame.display.flip()
+    while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                launch_game = 0
+                exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     lab.start_game = 1
-
-        window.blit(msg_load, (50, 220))
-        pygame.display.flip()
+                elif event.key == pygame.K_q:
+                    exit()
 
         while lab.start_game:
-            lab.display_map(window)
-            lab.user_move(window)
+            disp.display_map(lab.map)
+            disp.counter(lab.total_items)
+            disp.mac_gyver(lab.pos_y, lab.pos_x)
+            lab.user_move()
             pygame.display.flip()
+
+        if lab.dead == 1:
+            disp.message(disp.msg_dead)
+            pygame.display.flip()
+            break
+
+
+if __name__ == "__main__":
+    main()
+

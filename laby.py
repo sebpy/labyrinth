@@ -5,11 +5,13 @@
 import random as rd
 import pygame
 
+
 class Labyrinth:
     """ Create labyrinth with wall.txt """
 
     def __init__(self):
         self.start_game = 0
+        self.dead = 0
         self.map = []  # variable map with list
         self.total_items = 0  # initialize variable total_items
         self.pos_x = 0
@@ -37,37 +39,6 @@ class Labyrinth:
                 self.map[pos_y][pos_x] = i[0]
                 i.pop(0)
 
-    def display_map(self, window):
-        """ Show map """
-
-        ground = pygame.image.load("ressources/sol.png").convert()
-        wall = pygame.image.load("ressources/wall.png").convert()
-        guardian = pygame.image.load("ressources/Gardien.png").convert()
-        item_one = pygame.image.load("ressources/ether.png").convert()
-        item_two = pygame.image.load("ressources/seringue.png").convert()
-        item_three = pygame.image.load("ressources/aiguille.png").convert()
-
-        line_n = 0
-        for line in self.map:
-            rows_n = 0
-            for sprite in line:
-                y_sprite = line_n * 30
-                x_sprite = rows_n * 30
-                if sprite == "#":
-                    window.blit(wall, (x_sprite, y_sprite))
-                elif sprite == "G":
-                    window.blit(guardian, (x_sprite, y_sprite))
-                elif sprite == " ":
-                    window.blit(ground, (x_sprite, y_sprite))
-                elif sprite == "1":
-                    window.blit(item_one, (x_sprite, y_sprite))
-                elif sprite == "2":
-                    window.blit(item_two, (x_sprite, y_sprite))
-                elif sprite == "3":
-                    window.blit(item_three, (x_sprite, y_sprite))
-                rows_n += 1
-            line_n += 1
-
     def guardian(self, pos_y, pos_x):
         """ Return Position of guardian """
         return self.map[pos_y][pos_x] == "G"
@@ -82,50 +53,32 @@ class Labyrinth:
 
     def valid_move(self, pos_y, pos_x):
         """ Testing if move is valid """
-
         if self.items_in_box(pos_y, pos_x):
             return True
 
         if self.empty_box(pos_y, pos_x):
             return True
 
-    def counter_items(self, pos_y, pos_x, window):
+    def counter_items(self, pos_y, pos_x):
         """ Counter for items """
         if self.map[pos_y][pos_x] in ["1", "2", "3"]:
             self.total_items += 1
 
-        font_text = pygame.font.SysFont("cosmicsansms", 32)
-        text = font_text.render("Items: " + str(self.total_items), True, (255, 255, 255))
-
-        window.blit(text, (360, 4))
-
-    def mg_vs_guardian(self, pos_y, pos_x, window):
+    def mg_vs_guardian(self, pos_y, pos_x):
         """ check if Mg to all objects to lull the gardian """
         if self.map[pos_y][pos_x] == "G" and self.total_items != 3:
-            text_dead = pygame.font.SysFont("cosmicsansms", 32)
-            msg_dead = text_dead.render("You are dead! You must recover",
-                                        True, (255, 255, 255))
-            msg_dead2 = text_dead.render("all the items to lull the guardian",
-                                         True, (255, 255, 255))
-            window.blit(msg_dead, (22, 150))
-            window.blit(msg_dead2, (16, 170))
-
             self.start_game = 0
+            self.dead = 1
 
         elif self.map[pos_y][pos_x] == "G" and self.total_items == 3:
-            text_final = pygame.font.SysFont("cosmicsansms", 32)
-            msg_final = text_final.render("Great!! You are free!", True, (255, 255, 255))
-            window.blit(msg_final, (50, 190))
+            exit()
 
-            self.start_game = 0
-
-    def user_move(self, window):
+    def user_move(self):
         """ User choice one direction for move MacGyver
         Liste of moves : Z,Q,S,D for Up, Left, Down and Right """
 
         y_values = self.pos_y
         x_values = self.pos_x
-        macgyver = pygame.image.load("ressources/MacGyver.png").convert()
 
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
@@ -146,6 +99,6 @@ class Labyrinth:
             self.pos_y = y_values
             self.pos_x = x_values
 
-        self.counter_items(y_values, x_values, window)
-        self.mg_vs_guardian(y_values, x_values, window)
-        return window.blit(macgyver, ((self.pos_x * 30), (self.pos_y * 30)))
+        self.counter_items(y_values, x_values)
+        self.mg_vs_guardian(y_values, x_values)
+        return self.pos_x, self.pos_y
