@@ -41,31 +41,34 @@ class Labyrinth:
 
     def guardian(self, pos_y, pos_x):
         """ Return Position of guardian """
+
         return self.map[pos_y][pos_x] == "G"
 
     def empty_box(self, pos_y, pos_x):
         """ Return position of empty box """
+
         return self.map[pos_y][pos_x] == " "
 
     def items_in_box(self, pos_y, pos_x):
         """ Return position of items """
+
         return self.map[pos_y][pos_x] in ["1", "2", "3"]
 
     def valid_move(self, pos_y, pos_x):
         """ Testing if move is valid """
-        if self.items_in_box(pos_y, pos_x):
-            return True
 
-        if self.empty_box(pos_y, pos_x):
-            return True
+        if self.items_in_box(pos_y, pos_x) or self.empty_box(pos_y, pos_x):
+            return self.map[pos_y][pos_x]
 
     def counter_items(self, pos_y, pos_x):
         """ Counter for items """
+
         if self.map[pos_y][pos_x] in ["1", "2", "3"]:
             self.total_items += 1
 
     def mg_vs_guardian(self, pos_y, pos_x):
         """ check if Mg to all objects to lull the gardian """
+
         if self.map[pos_y][pos_x] == "G" and self.total_items != 3:
             self.start_game = 0
             self.dead = 1

@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf8 -*-
+""" Display class """
 
 import pygame as pg
 
 
 class Display:
+    """ show interface graphic with pygame """
     SPRITE_SIZE = 30
     SPRITE_N = 15
     BOARD_SIZE = SPRITE_SIZE * SPRITE_N
@@ -23,17 +25,18 @@ class Display:
                       "item_three": pg.image.load("ressources/aiguille.png").convert()}
 
         self.text_load = pg.font.SysFont("cosmicsansms", 32)
-        self.msg_load = self.text_load.render("To play, press ENTER or Q for quit", True, (255, 255, 255))
+        self.msg_load = self.text_load.render("To play, press ENTER or Q for quit",
+                                              True, (255, 255, 255))
         self.msg_final = self.text_load.render("Great!! You are free!", True, (255, 255, 255))
         self.msg_dead = self.text_load.render("You are dead!", True, (255, 255, 255))
 
-    def display_map(self, map):
+    def display_map(self, mapping):
         """ Show map """
 
-        for y, line in enumerate(map):
-            for x, sprite in enumerate(line):
-                y_sprite = y * 30
-                x_sprite = x * 30
+        for y_pos, line in enumerate(mapping):
+            for x_pos, sprite in enumerate(line):
+                y_sprite = y_pos * 30
+                x_sprite = x_pos * 30
                 if sprite == "#":
                     self.window.blit(self.image["wall"], (x_sprite, y_sprite))
                 elif sprite == "G":
@@ -47,13 +50,16 @@ class Display:
                 elif sprite == "3":
                     self.window.blit(self.image["item_three"], (x_sprite, y_sprite))
 
-    def mac_gyver(self, y, x):
+    def mac_gyver(self, y_pos, x_pos):
+        """ Create Mac Gyver sprite """
         macgyver = pg.image.load("ressources/MacGyver.png").convert()
-        self.window.blit(macgyver, ((x * 30), (y * 30)))
+        self.window.blit(macgyver, ((x_pos * 30), (y_pos * 30)))
 
     def message(self, msg):
+        """ Print messages on screen """
         self.window.blit(msg, (150, 190))
 
     def counter(self, total_items):
+        """ Show items counter """
         counter = self.text_load.render("Items: " + str(total_items), True, (255, 255, 255))
         self.window.blit(counter, (360, 4))

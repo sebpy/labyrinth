@@ -8,6 +8,8 @@ import display
 
 
 def main():
+    """ Main function"""
+
     disp = display.Display()
     lab = laby.Labyrinth()
     lab.load_map()
@@ -40,4 +42,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
