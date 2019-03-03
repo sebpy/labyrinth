@@ -10,10 +10,10 @@ class Labyrinth:
     """ Create labyrinth with wall.txt """
 
     def __init__(self):
-        self.start_game = 0
         self.dead = 0
-        self.map = []  # variable map with list
-        self.total_items = 0  # initialize variable total_items
+        self.free = 0
+        self.map = []
+        self.total_items = 0
         self.pos_x = 0
         self.pos_y = 1
 
@@ -59,10 +59,10 @@ class Labyrinth:
 
         if self.items_in_box(pos_y, pos_x) or self.empty_box(pos_y, pos_x):
             return self.map[pos_y][pos_x]
+        return None
 
     def counter_items(self, pos_y, pos_x):
         """ Counter for items """
-
         if self.map[pos_y][pos_x] in ["1", "2", "3"]:
             self.total_items += 1
 
@@ -70,11 +70,10 @@ class Labyrinth:
         """ check if Mg to all objects to lull the gardian """
 
         if self.map[pos_y][pos_x] == "G" and self.total_items != 3:
-            self.start_game = 0
             self.dead = 1
 
         elif self.map[pos_y][pos_x] == "G" and self.total_items == 3:
-            exit()
+            self.free = 1
 
     def user_move(self):
         """ User choice one direction for move MacGyver

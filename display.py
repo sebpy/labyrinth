@@ -22,12 +22,13 @@ class Display:
                       "guardian": pg.image.load("ressources/Gardien.png").convert(),
                       "item_one": pg.image.load("ressources/ether.png").convert(),
                       "item_two": pg.image.load("ressources/seringue.png").convert(),
-                      "item_three": pg.image.load("ressources/aiguille.png").convert()}
+                      "item_three": pg.image.load("ressources/aiguille.png").convert(),
+                      "mac_gyver": pg.image.load("ressources/MacGyver.png").convert()}
 
         self.text_load = pg.font.SysFont("cosmicsansms", 32)
         self.msg_load = self.text_load.render("To play, press ENTER or Q for quit",
                                               True, (255, 255, 255))
-        self.msg_final = self.text_load.render("Great!! You are free!", True, (255, 255, 255))
+        self.msg_free = self.text_load.render("Great!! You are free!", True, (255, 255, 255))
         self.msg_dead = self.text_load.render("You are dead!", True, (255, 255, 255))
 
     def display_map(self, mapping):
@@ -50,16 +51,29 @@ class Display:
                 elif sprite == "3":
                     self.window.blit(self.image["item_three"], (x_sprite, y_sprite))
 
+    def counter(self, items):
+        """ Show items counter """
+        counter_items = self.text_load.render("Items: " + str(items), True, (255, 255, 255))
+        i = 12
+        while i < 15:
+            self.window.blit(self.image["wall"], ((i * 30), (0 * 30)))
+            i += 1
+
+        self.window.blit(counter_items, (360, 4))
+
     def mac_gyver(self, y_pos, x_pos):
         """ Create Mac Gyver sprite """
-        macgyver = pg.image.load("ressources/MacGyver.png").convert()
-        self.window.blit(macgyver, ((x_pos * 30), (y_pos * 30)))
+        self.window.blit(self.image["mac_gyver"], ((x_pos * 30), (y_pos * 30)))
 
     def message(self, msg):
         """ Print messages on screen """
-        self.window.blit(msg, (150, 190))
+        if msg == self.msg_free:
+            self.window.blit(msg, (140, 220))
+        elif msg == self.msg_dead:
+            self.window.blit(msg, (160, 220))
 
-    def counter(self, total_items):
-        """ Show items counter """
-        counter = self.text_load.render("Items: " + str(total_items), True, (255, 255, 255))
-        self.window.blit(counter, (360, 4))
+    def display_flip(self):
+        pg.display.flip()
+
+    def clean_box(self, y_pos, x_pos):
+        self.window.blit(self.image["ground"], ((x_pos * 30), (y_pos * 30)))

@@ -2,7 +2,6 @@
 # -*- coding: utf8 -*-
 """ Start Labyrinth game """
 
-import pygame
 import laby
 import display
 
@@ -14,29 +13,23 @@ def main():
     lab = laby.Labyrinth()
     lab.load_map()
     lab.randomize_items()
+    disp.display_map(lab.map)
+    disp.display_flip()
 
-    disp.window.blit(disp.msg_load, (40, 220))
-    pygame.display.flip()
     while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                exit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:
-                    lab.start_game = 1
-                elif event.key == pygame.K_q:
-                    exit()
-
-        while lab.start_game:
-            disp.display_map(lab.map)
-            disp.counter(lab.total_items)
-            disp.mac_gyver(lab.pos_y, lab.pos_x)
-            lab.user_move()
-            pygame.display.flip()
+        disp.counter(lab.total_items)
+        disp.clean_box(lab.pos_y, lab.pos_x)
+        lab.user_move()
+        disp.mac_gyver(lab.pos_y, lab.pos_x)
+        disp.display_flip()
 
         if lab.dead == 1:
             disp.message(disp.msg_dead)
-            pygame.display.flip()
+            disp.display_flip()
+            break
+        elif lab.free == 1:
+            disp.message(disp.msg_free)
+            disp.display_flip()
             break
 
 
