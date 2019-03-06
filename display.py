@@ -72,7 +72,8 @@ class Display:
         elif msg == self.msg_dead:
             self.window.blit(msg, (160, 220))
 
-    def display_flip(self):
+    @classmethod
+    def display_flip(cls):
         """ display pygame """
         pg.display.flip()
 
