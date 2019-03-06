@@ -73,7 +73,9 @@ class Display:
             self.window.blit(msg, (160, 220))
 
     def display_flip(self):
+        """ display pygame """
         pg.display.flip()
 
     def clean_box(self, y_pos, x_pos):
+        """ change old position of MG by ground sprite """
         self.window.blit(self.image["ground"], ((x_pos * 30), (y_pos * 30)))
